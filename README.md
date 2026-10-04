@@ -2,8 +2,8 @@
 
 A pipeline for assessing second-language proficiency from eye movements in
 reading. It extracts eye-tracking features from the MECO and OneStop corpora,
-trains models that predict proficiency test scores, computes EyeScore -- how
-similar a reader's eye movements are to those of native (L1) readers -- and
+trains models that predict proficiency test scores, computes EyeScore, how
+similar a reader's eye movements are to those of native (L1) readers, and
 renders the paper's tables and figures.
 
 ## Data availability
@@ -130,20 +130,17 @@ The paper's tables read, in addition to the runs above:
 
   ```bash
   python -m src.run.predictions --datasets Meco --models Ridge_Classifier,Average
-  python -m src.run.predictions --datasets Meco --models LightGBM --inner-validation holdout
+  python -m src.run.predictions --datasets Meco --models TabPFN
   python -m src.run.predictions --datasets Meco --models LightGBM --inner-validation kfold
   python -m src.run.predictions --stage evaluation --agg-types fully_agg \
       --models Ridge_Classifier,LightGBM,Average --pairwise-baseline-only --pairwise-vs-ridge
   ```
 
-  TabPFN, for the appendix's TabPFN tables, runs the same way with
-  `--models TabPFN`.
-
-- three debiasing trees, for the L1-bias tables and figures:
+- debiasing result tree for the L1-bias tables and figures:
 
   ```bash
   python -m src.run.eyescore --datasets Meco --agg-types seen_unseen \
-      --debias-methods two_step,distance_mreg,interaction \
+      --debias-methods two_step \
       --results-suffix cat3ctr --center-distance \
       --typo-calib-distance-type 'cat:syntactic+phonological+scriptural'
   ```
