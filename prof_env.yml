@@ -1,0 +1,119 @@
+name: prof_env
+
+channels:
+  - pytorch
+  - nvidia
+  - huggingface
+  - conda-forge
+  - defaults
+
+dependencies:
+  # ---- Python ----
+  - python=3.12
+
+  # ---- Core tooling ----
+  - pip
+  - setuptools
+  - wheel
+  - ipython
+  - ipykernel
+  - jupyter_client
+  - jupyter_core
+  - debugpy
+  - traitlets
+  - platformdirs
+  - typing_extensions
+
+  # ---- Scientific stack ----
+  - numpy>=2.2,<2.4
+  - pandas>=2.2,<2.4
+  - scipy=1.15.3
+  - scikit-learn>=1.6,<1.8
+  - statsmodels=0.14.4
+  - seaborn=0.13.2
+  - matplotlib>=3.10,<3.11
+  - pyarrow=19.0.1
+  - pyyaml=6.0.2
+  - joblib
+  - threadpoolctl
+  - colorcet
+  - rdata
+  - tqdm
+  - requests
+
+  # ---- Deep learning / GPU ----
+  - pytorch=2.5.1
+  - pytorch-cuda=12.4
+  - transformers=4.47.1
+  - datasets=3.5.0
+  - lightning=2.5.1
+  - accelerate=1.5.2
+  - peft=0.15.2
+  - pytorch-metric-learning=2.9.0
+  - py-xgboost=3.0.0
+  - gpustat=1.1.1
+
+  # ---- NLP ----
+  - spacy=3.8.5
+  - wordfreq=3.1.1
+
+  # ---- Dev / QA / utilities ----
+  - pytest
+  - pre-commit=4.2.0
+  - ruff=0.11.6
+  - mypy=1.15.0
+  - beartype=0.20.2
+  - hydra-core=1.3.2
+  - loguru=0.7.2
+  - wandb=0.23
+  - typed-argument-parser=1.10.1
+  - pandas-stubs
+  - types-tqdm
+  - ipywidgets
+  - openpyxl
+
+  # ---- LaTeX for tables ----
+  - texlive-core
+  - latexmk
+
+  # ---- pip-only dependencies ----
+  - pip:
+      # Prediction models. lightgbm is imported at module level by
+      # src/methods/predictions/models/GradientBoosting.py -- kept on pip (not
+      # conda-forge) because the pypi wheel is the one the results were produced
+      # with, and its OpenCL device='gpu' support differs between builds.
+      - lightgbm==4.6.0
+      # Statistics / data loading used by src/
+      - linearmodels==7.0
+      - pyreadr==0.5.4
+      # urielplus supplies the URIEL+ typological distances behind the EyeScore
+      # debiasing (src/methods/EyeScore/typology.py imports it at module level,
+      # so the whole eyescore pipeline fails to import without it).
+      #
+      # It MUST be installed --no-deps. Its setup.py declares tensorflow>=2.11.1
+      # and tensorflow-addons>=0.19, but no module in the package imports either
+      # -- and tensorflow-addons no longer exists on PyPI for Python 3.12, so a
+      # plain `pip install urielplus` aborts the whole transaction. Its real
+      # module-level third-party needs are fancyimpute and contexttimer, listed
+      # below; MIDASpy is imported lazily inside one imputation method we never
+      # call. Conda/pip cannot express --no-deps per-package, so this needs the
+      # manual step:
+      #     pip install fancyimpute contexttimer
+      #     pip install urielplus==1.2 --no-deps
+      - fancyimpute
+      - contexttimer
+      # - urielplus==1.2   # see above: install manually with --no-deps
+      # Install supporting libraries from Git
+      - git+https://github.com/aeye-lab/pymovements.git
+      - git+https://github.com/lacclab/text-metrics.git
+      # SpaCy small language models (match eyebench defaults)
+      - en_core_web_sm@https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+      - da_core_news_sm@https://github.com/explosion/spacy-models/releases/download/da_core_news_sm-3.8.0/da_core_news_sm-3.8.0-py3-none-any.whl
+      - de_core_news_sm@https://github.com/explosion/spacy-models/releases/download/de_core_news_sm-3.8.0/de_core_news_sm-3.8.0-py3-none-any.whl
+      - juliacall
+      - lang2vec
+      # Optional model backends. Imported lazily by src/methods/predictions/models/
+      # {TabPFN,TabStar}.py, which raise a clear ImportError if absent. Not installed
+      # in the reference env -- uncomment only if running those models.
+      # - tabpfn
+      # - tabstar

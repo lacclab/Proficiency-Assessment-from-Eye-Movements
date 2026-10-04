@@ -1,0 +1,27 @@
+# Datasets: downloaded, harmonized and turned into features by the pipeline
+# (src.preprocessing.download, src.run.features).
+/data/
+
+# Outputs of the pipeline stages; rerun the stages to regenerate them.
+src/methods/EyeScore/results*/
+src/methods/predictions/results/
+src/evaluation/*/results*/
+src/evaluation/*/plots*/
+src/evaluation/*/tables*/
+src/correlations/*/results/
+src/correlations/*/plots/
+src/reliability/results/
+/paper/
+
+# Run logs.
+*.log
+*.out
+
+# Written into the working directory whenever text_metrics is imported (a demo
+# call at module level in its viz_text_heatmap.py).
+colorized_texts.html
+
+# Python and editor files.
+__pycache__/
+*.pyc
+.vscode/
